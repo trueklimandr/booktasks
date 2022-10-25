@@ -4,6 +4,7 @@
 package booktasks;
 
 import booktasks.classes.Employee;
+import booktasks.classes.Greeter;
 import booktasks.classes.SquareSequence;
 import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
@@ -14,10 +15,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.util.*;
 
 public class App {
     private final static Scanner in = new Scanner(System.in);
@@ -33,8 +31,20 @@ public class App {
             case "3.5" -> ex35();
             case "3.6" -> ex36();
             case "3.8" -> ex38();
+            case "3.9" -> ex39();
             default -> ex();
         }
+    }
+
+    private static void ex39() {
+        Random random = new Random();
+        Greeter greeter = new Greeter(random.nextInt(1, 7), "First");
+        Greeter anotherGreeter = new Greeter(random.nextInt(1, 7), "Second");
+        Thread firstThread = new Thread(greeter);
+        Thread scndThread = new Thread(anotherGreeter);
+
+        firstThread.start();
+        scndThread.start();
     }
 
     private static void ex38() {
