@@ -13,12 +13,14 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
 public class App {
     private final static Scanner in = new Scanner(System.in);
+    private final static Random random = new Random();
 
     public static void main(String[] args) {
         System.out.print("Type exercise: ");
@@ -32,12 +34,24 @@ public class App {
             case "3.6" -> ex36();
             case "3.8" -> ex38();
             case "3.9" -> ex39();
+            case "3.12" -> ex312();
             default -> ex();
         }
     }
 
+    private static void ex312() {
+        File directory = new File("/home/klimandr/workspace");
+        if (!directory.isDirectory()) {
+            System.out.println("It is not a directory");
+            return;
+        }
+
+        for (String filename : Objects.requireNonNull(directory.list((File dir, String file) -> file.endsWith(".csv")))) {
+            System.out.println(filename);
+        }
+    }
+
     private static void ex39() {
-        Random random = new Random();
         Greeter greeter = new Greeter(random.nextInt(1, 7), "First");
         Greeter anotherGreeter = new Greeter(random.nextInt(1, 7), "Second");
         Thread firstThread = new Thread(greeter);
