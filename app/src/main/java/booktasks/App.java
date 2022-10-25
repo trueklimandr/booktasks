@@ -79,20 +79,12 @@ public class App {
         sortedStrings.sort(comp);
         int count = 0;
 
-        while (!doesListsEqual(strings, sortedStrings)) {
+        while (!strings.equals(sortedStrings)) {
             Collections.shuffle(strings);
             count++;
         }
 
         System.out.printf("It took %d times", count);
-    }
-
-    private static boolean doesListsEqual(ArrayList<String> strings, ArrayList<String> sortedStrings) {
-        for (int i = 0; i < sortedStrings.size(); i++) {
-            if (!strings.get(i).equals(sortedStrings.get(i))) return false;
-        }
-
-        return true;
     }
 
     private static void ex36() {
