@@ -4,6 +4,8 @@
 package booktasks;
 
 import booktasks.classes.Employee;
+import booktasks.classes.SquareSequence;
+import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
 import com.google.common.base.Strings;
 import com.opencsv.CSVReader;
@@ -19,13 +21,67 @@ public class App {
 
     public static void main(String[] args) {
         System.out.print("Type exercise: ");
-        String exercise = in.next();
+        String exercise = in.nextLine();
         switch (exercise) {
             case "2.13" -> ex213();
             case "3.1" -> ex31();
             case "3.2" -> ex32();
+            case "3.3" -> ex33();
+            case "3.4" -> ex34();
+            case "3.5" -> ex35();
             default -> ex();
         }
+    }
+
+    private static void ex35() {
+        System.out.print("Type number: ");
+        int number = in.nextInt();
+
+        SquareSequence seq = new SquareSequence();
+
+        for (int i = 1; i <= number; i++) {
+            System.out.print(seq.next().toString());
+            if (i != number) System.out.print(", ");
+        }
+    }
+
+    private static void ex34() {
+        System.out.print("Type digit: ");
+        int digit = in.nextInt();
+
+        IntSequence constSeq = IntSequence.generate(() -> new IntSequence() {
+            public boolean hasNext() {
+                return true;
+            }
+
+            public int next() {
+                return digit;
+            }
+        });
+
+        for (int i = 1; i <= digit; i++) {
+            System.out.println(i + ". " + constSeq.next());
+        }
+    }
+
+    private static void ex33() {
+        System.out.print("Type sequence: ");
+        String s = in.nextLine();
+        String[] sequence = s.split(" ");
+        IntSequence intSequence = IntSequence.of(getIntSequenceFromStringSequence(sequence));
+
+        System.out.print("Sequence: ");
+        while (intSequence.hasNext()) {
+            System.out.print(intSequence.next() + ", ");
+        }
+    }
+
+    private static int[] getIntSequenceFromStringSequence(String[] sequence) {
+        int[] ints = new int[sequence.length];
+        for (int i = 0; i < sequence.length; i++) {
+            ints[i] = Integer.parseInt(sequence[i]);
+        }
+        return ints;
     }
 
     private static void ex32() {
