@@ -14,6 +14,9 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class App {
@@ -26,14 +29,49 @@ public class App {
             case "2.13" -> ex213();
             case "3.1" -> ex31();
             case "3.2" -> ex32();
-            case "3.3" -> ex33();
             case "3.4" -> ex34();
             case "3.5" -> ex35();
+            case "3.6" -> ex36();
+            case "3.8" -> ex38();
             default -> ex();
         }
     }
 
-    private static void ex35() {
+    private static void ex38() {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("Vladimir");
+        list.add("Andrey");
+        list.add("Zack");
+        list.add("Jack");
+        list.add("Igor");
+        list.add("Charles");
+        list.add("Alexander");
+
+        luckySort(list, String::compareToIgnoreCase);
+    }
+
+    private static void luckySort(ArrayList<String> strings, Comparator<String> comp) {
+        ArrayList<String> sortedStrings = new ArrayList<>(strings);
+        sortedStrings.sort(comp);
+        int count = 0;
+
+        while (!doesListsEqual(strings, sortedStrings)) {
+            Collections.shuffle(strings);
+            count++;
+        }
+
+        System.out.printf("It took %d times", count);
+    }
+
+    private static boolean doesListsEqual(ArrayList<String> strings, ArrayList<String> sortedStrings) {
+        for (int i = 0; i < sortedStrings.size(); i++) {
+            if (!strings.get(i).equals(sortedStrings.get(i))) return false;
+        }
+
+        return true;
+    }
+
+    private static void ex36() {
         System.out.print("Type number: ");
         int number = in.nextInt();
 
@@ -45,7 +83,7 @@ public class App {
         }
     }
 
-    private static void ex34() {
+    private static void ex35() {
         System.out.print("Type digit: ");
         int digit = in.nextInt();
 
@@ -64,7 +102,7 @@ public class App {
         }
     }
 
-    private static void ex33() {
+    private static void ex34() {
         System.out.print("Type sequence: ");
         String s = in.nextLine();
         String[] sequence = s.split(" ");
