@@ -6,6 +6,7 @@ package booktasks;
 import booktasks.classes.Employee;
 import booktasks.classes.Greeter;
 import booktasks.classes.SquareSequence;
+import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
 import com.google.common.base.Strings;
@@ -20,6 +21,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class App {
+    private static final String NUMBERS_FILEPATH = "/home/klimandr/numbers";
+
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
 
@@ -38,16 +41,32 @@ public class App {
             case "3.12" -> ex312();
             case "props" -> props();
             case "5.1" -> ex51();
+            case "5.2" -> ex52();
             default -> ex();
         }
     }
 
+    private static void ex52() {
+        try {
+            System.out.println(sumOfValues(NUMBERS_FILEPATH));
+        } catch (FileNotFoundException | IllegalFileFormatException e) {
+            System.out.println("EXCEPTION: " + e.getClass().getSimpleName());
+        }
+    }
+
+    private static Double sumOfValues(String filepath) throws FileNotFoundException, IllegalFileFormatException {
+        Double sum = 0.0;
+        for (Double number : readValues(filepath)) {
+            sum += number;
+        }
+        
+        return sum;
+    }
+
     private static void ex51() {
-        System.out.print("Input the file name: ");
-        String filename = in.next();
         ArrayList<Double> doubles;
         try {
-            doubles = readValues(filename);
+            doubles = readValues(NUMBERS_FILEPATH);
         } catch (Exception e) {
             System.out.println("EXCEPTION: " + e.getClass().getSimpleName());
             return;
@@ -56,15 +75,19 @@ public class App {
         doubles.forEach(System.out::println);
     }
 
-    private static ArrayList<Double> readValues(String filename) throws FileNotFoundException {
+    private static ArrayList<Double> readValues(String filepath) throws FileNotFoundException, IllegalFileFormatException {
         ArrayList<Double> list = new ArrayList<>();
 
         try (
-            FileReader reader = new FileReader("/home/klimandr/" + filename);
+            FileReader reader = new FileReader(filepath);
             Scanner scanner = new Scanner(reader);
         ) {
             while (scanner.hasNextLine()) {
-                list.add(Double.valueOf(scanner.nextLine()));
+                try {
+                    list.add(Double.valueOf(scanner.nextLine()));
+                } catch (NumberFormatException e) {
+                    throw new IllegalFileFormatException();
+                }
             }
         } catch (IOException e) {
             FileNotFoundException fnfEx = new FileNotFoundException();
