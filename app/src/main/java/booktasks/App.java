@@ -14,6 +14,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -36,8 +37,42 @@ public class App {
             case "3.9" -> ex39();
             case "3.12" -> ex312();
             case "props" -> props();
+            case "5.1" -> ex51();
             default -> ex();
         }
+    }
+
+    private static void ex51() {
+        System.out.print("Input the file name: ");
+        String filename = in.next();
+        ArrayList<Double> doubles;
+        try {
+            doubles = readValues(filename);
+        } catch (Exception e) {
+            System.out.println("EXCEPTION: " + e.getClass().getSimpleName());
+            return;
+        }
+
+        doubles.forEach(System.out::println);
+    }
+
+    private static ArrayList<Double> readValues(String filename) throws FileNotFoundException {
+        ArrayList<Double> list = new ArrayList<>();
+
+        try (
+            FileReader reader = new FileReader("/home/klimandr/" + filename);
+            Scanner scanner = new Scanner(reader);
+        ) {
+            while (scanner.hasNextLine()) {
+                list.add(Double.valueOf(scanner.nextLine()));
+            }
+        } catch (IOException e) {
+            FileNotFoundException fnfEx = new FileNotFoundException();
+            fnfEx.addSuppressed(e);
+            throw fnfEx;
+        }
+
+        return list;
     }
 
     private static void props() {
