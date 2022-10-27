@@ -42,8 +42,14 @@ public class App {
             case "props" -> props();
             case "5.1" -> ex51();
             case "5.2" -> ex52();
+            case "5.11" -> ex511();
             default -> ex();
         }
+    }
+
+    private static void ex511() {
+        NoSuchMethodException ex = new NoSuchMethodException("New exception");
+        ex.printStackTrace();
     }
 
     private static void ex52() {
