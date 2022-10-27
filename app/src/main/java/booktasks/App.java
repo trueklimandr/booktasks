@@ -35,8 +35,14 @@ public class App {
             case "3.8" -> ex38();
             case "3.9" -> ex39();
             case "3.12" -> ex312();
+            case "props" -> props();
             default -> ex();
         }
+    }
+
+    private static void props() {
+        Properties p = System.getProperties();
+        p.list(System.out);
     }
 
     private static void ex312() {
