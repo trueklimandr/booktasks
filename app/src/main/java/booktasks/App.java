@@ -50,8 +50,41 @@ public class App {
             case "6.6" -> ex66();
             case "6.7" -> ex67();
             case "6.11" -> ex611();
+            case "6.20" -> ex620();
             default -> ex();
         }
+    }
+
+    private static void ex620() {
+        Integer[] list = repeat(5, random.nextInt(), random.nextInt());
+        System.out.println(java.util.Arrays.toString(list));
+    }
+
+    @SafeVarargs public static final <T> T[] repeat(int n, T... objs) {
+        T[] result;
+        @SuppressWarnings("unchecked") T[] newArray = (T[]) java.lang.reflect.Array.newInstance(
+            objs.getClass().getComponentType(),
+            n * objs.length
+        );
+        result = newArray;
+        for (int i = 1; i <= objs.length; i++) {
+            for (int j = 1; j <= n; j++) result[(i * n) - n + j - 1] = objs[i - 1];
+        }
+        return result;
+    }
+
+    public static <T> T[] repeat(int n, T obj, T[] array) {
+        T[] result;
+        if (array.length >= n)
+            result = array;
+        else {
+            @SuppressWarnings("unchecked") T[] newArray
+                    = (T[]) java.lang.reflect.Array.newInstance(
+                    array.getClass().getComponentType(), n);
+            result = newArray;
+        }
+        for (int i = 0; i < n; i++) result[i] = obj;
+        return result;
     }
 
     private static void ex611() {
