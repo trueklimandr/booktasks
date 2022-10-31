@@ -6,6 +6,7 @@ package booktasks;
 import booktasks.classes.Employee;
 import booktasks.classes.Greeter;
 import booktasks.classes.SquareSequence;
+import booktasks.classes.Stack;
 import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
@@ -43,7 +44,25 @@ public class App {
             case "5.1" -> ex51();
             case "5.2" -> ex52();
             case "5.11" -> ex511();
+            case "6.1" -> ex61();
             default -> ex();
+        }
+    }
+
+    private static void ex61() {
+        Stack<Integer> stack = new Stack<>();
+        try {
+            stack.pop();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        stack.push(random.nextInt());
+        if (!stack.isEmpty()) {
+            try {
+                System.out.println("Now it's not empty with the number " + stack.pop());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
