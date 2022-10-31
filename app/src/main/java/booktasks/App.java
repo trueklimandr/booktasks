@@ -44,7 +44,24 @@ public class App {
             case "5.11" -> ex511();
             case "6.1" -> ex61();
             case "6.2" -> ex62();
+            case "6.3" -> ex63();
             default -> ex();
+        }
+    }
+
+    private static void ex63() {
+        Table<String, Integer> table = new Table<>();
+        table.set("first", 1);
+        table.set("second", 2);
+        try {
+            Integer value = table.get("third");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            System.out.println("Second value is " + table.get("second"));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
