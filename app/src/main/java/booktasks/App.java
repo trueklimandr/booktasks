@@ -45,8 +45,44 @@ public class App {
             case "6.1" -> ex61();
             case "6.2" -> ex62();
             case "6.3" -> ex63();
+            case "6.5" -> ex65();
+            case "6.6" -> ex66();
             default -> ex();
         }
+    }
+
+    private static void ex66() {
+        ArrayList<Employee> employees = new ArrayList<>();
+        employees.add(new Employee("Andrey", 1000.0));
+        employees.add(new Employee("Pavel", 3500.0));
+        ArrayList<Manager> managers = new ArrayList<>();
+        managers.add(new Manager("Georgy", 5000.0));
+        ArrayList<Employee> all = /*(ArrayList<Employee>)*/ merge(employees, managers);
+        System.out.println("The list:");
+        for (Employee employee : all) {
+            System.out.println(employee.getName());
+        }
+    }
+
+    private static <E> ArrayList<E> merge(ArrayList<E> list, ArrayList<? extends E> anotherList) {
+        list.addAll(anotherList);
+        return list;
+    }
+
+//    private static <E> ArrayList<? super E> merge(ArrayList<? super E> list, ArrayList<E> anotherList) {
+//        list.addAll(anotherList);
+//        return list;
+//    }
+
+    private static void ex65() {
+        Double[] result = swap(0, 1, 1.5, 2.0, 3.0);
+    }
+
+    private static <T> T[] swap(int i, int j, T... values) {
+        T temp = values[i];
+        values[i] = values[j];
+        values[j] = temp;
+        return values;
     }
 
     private static void ex63() {
