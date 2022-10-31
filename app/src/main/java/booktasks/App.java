@@ -47,8 +47,17 @@ public class App {
             case "6.3" -> ex63();
             case "6.5" -> ex65();
             case "6.6" -> ex66();
+            case "6.7" -> ex67();
             default -> ex();
         }
+    }
+
+    private static void ex67() {
+        Pair<Integer> pair = new Pair<>(random.nextInt(), random.nextInt());
+        System.out.println("First: " + pair.getFirst());
+        System.out.println("Second: " + pair.getSecond());
+        System.out.println("Min: " + pair.min());
+        System.out.println("Max: " + pair.max());
     }
 
     private static void ex66() {
