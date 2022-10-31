@@ -4,6 +4,7 @@
 package booktasks;
 
 import booktasks.classes.*;
+import booktasks.classes.Arrays;
 import booktasks.classes.Stack;
 import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
@@ -48,8 +49,17 @@ public class App {
             case "6.5" -> ex65();
             case "6.6" -> ex66();
             case "6.7" -> ex67();
+            case "6.11" -> ex611();
             default -> ex();
         }
+    }
+
+    private static void ex611() {
+        Integer[] numbers = new Integer[]{random.nextInt(), random.nextInt(), random.nextInt(), random.nextInt()};
+        Pair<Integer> minMax = Arrays.minMax(numbers);
+        System.out.println(java.util.Arrays.toString(numbers));
+        System.out.println("Min: " + minMax.getFirst());
+        System.out.println("Max: " + minMax.getSecond());
     }
 
     private static void ex67() {
