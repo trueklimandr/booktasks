@@ -3,9 +3,7 @@
  */
 package booktasks;
 
-import booktasks.classes.Employee;
-import booktasks.classes.Greeter;
-import booktasks.classes.SquareSequence;
+import booktasks.classes.*;
 import booktasks.classes.Stack;
 import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
@@ -45,7 +43,25 @@ public class App {
             case "5.2" -> ex52();
             case "5.11" -> ex511();
             case "6.1" -> ex61();
+            case "6.2" -> ex62();
             default -> ex();
+        }
+    }
+
+    private static void ex62() {
+        AnotherArrayStack<Integer> stack = new AnotherArrayStack<>();
+        try {
+            stack.pop();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        stack.push(random.nextInt());
+        if (!stack.isEmpty()) {
+            try {
+                System.out.println("Now it's not empty with the number " + stack.pop());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
