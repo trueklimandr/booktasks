@@ -26,4 +26,12 @@ public class Arrays {
     public static <E extends Comparable<E>> Pair<E> minMax(E[] elements) {
         return new Pair<>(min(elements), max(elements));
     }
+
+    /**
+     * @deprecated not working
+     */
+    public static <T> T[] construct(int size) {
+        @SuppressWarnings("unchecked") T[] array = (T[]) new Object[size];
+        return array;
+    }
 }

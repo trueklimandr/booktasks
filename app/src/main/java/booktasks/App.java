@@ -51,8 +51,17 @@ public class App {
             case "6.7" -> ex67();
             case "6.11" -> ex611();
             case "6.20" -> ex620();
+            case "6.21" -> ex621();
             default -> ex();
         }
+    }
+
+    /**
+     * @deprecated not working
+     */
+    private static void ex621() {
+        List<String>[] result = Arrays.construct(10);
+        System.out.println(result.toString());
     }
 
     private static void ex620() {
