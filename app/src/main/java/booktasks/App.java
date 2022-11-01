@@ -27,34 +27,24 @@ public class App {
     private final static Random random = new Random();
 
     public static void main(String[] args) {
-        System.out.print("Type exercise: ");
+        System.out.print("Type exercise in the format like [chapterNumber].[exerciseNumber]: ");
         String exercise = in.nextLine();
-        switch (exercise) {
-            case "2.13" -> ex213();
-            case "3.1" -> ex31();
-            case "3.2" -> ex32();
-            case "3.4" -> ex34();
-            case "3.5" -> ex35();
-            case "3.6" -> ex36();
-            case "3.8" -> ex38();
-            case "3.9" -> ex39();
-            case "3.12" -> ex312();
-            case "props" -> props();
-            case "5.1" -> ex51();
-            case "5.2" -> ex52();
-            case "5.11" -> ex511();
-            case "6.1" -> ex61();
-            case "6.2" -> ex62();
-            case "6.3" -> ex63();
-            case "6.5" -> ex65();
-            case "6.6" -> ex66();
-            case "6.7" -> ex67();
-            case "6.11" -> ex611();
-            case "6.20" -> ex620();
-            case "6.21" -> ex621();
-            case "6.22" -> ex622();
-            default -> ex();
+        App app = new App();
+        try {
+            app.getClass().getDeclaredMethod("ex" + exercise.replace(".", "")).invoke(app);
+        } catch (Exception e) {
+            ex();
         }
+    }
+
+    private static void ex71() {
+        System.out.print("Type integer: ");
+        int number = in.nextInt();
+        SimpleNumberSet set = new SimpleNumberSet(number, true);
+        if (set.size() < 300) {
+            System.out.println(set);
+        }
+        System.out.println("Размер множества: " + set.size());
     }
 
     private static void ex622() {
@@ -224,7 +214,7 @@ public class App {
         for (Double number : readValues(filepath)) {
             sum += number;
         }
-        
+
         return sum;
     }
 
