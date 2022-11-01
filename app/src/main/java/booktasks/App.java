@@ -52,7 +52,17 @@ public class App {
             case "6.11" -> ex611();
             case "6.20" -> ex620();
             case "6.21" -> ex621();
+            case "6.22" -> ex622();
             default -> ex();
+        }
+    }
+
+    private static void ex622() {
+        try {
+            Exceptions.doWork(() -> new FileReader("/abracadabra").ready() ? "adf" : "sdfs", ClassCastException::new);
+        } catch (Exception e) {
+            System.out.println(e.getClass());
+            System.out.println(e.getCause().getMessage());
         }
     }
 
