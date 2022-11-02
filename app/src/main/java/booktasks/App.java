@@ -34,8 +34,87 @@ public class App {
         try {
             app.getClass().getDeclaredMethod("ex" + exercise.replace(".", "")).invoke(app);
         } catch (Exception e) {
+//            e.getCause().printStackTrace();
             ex();
         }
+    }
+
+    private static void ex710() {
+        Map<String, City> graph = generateCitiesGraph();
+        String startCity = "Питер";
+        City currentNode = graph.getOrDefault(startCity, City.empty());
+        currentNode.setDistance(0);
+        while (!currentNode.isEmpty()) {
+            PriorityQueue<Neighbor> neighbors = currentNode.neighbors();
+            while (!neighbors.isEmpty()) {
+                Neighbor currentNeighbor = neighbors.poll();
+                City neighborCity = graph.getOrDefault(currentNeighbor.name(), City.empty());
+                if (neighborCity.isEmpty()) {
+                    System.out.println("Граф несвязный!");
+                    return;
+                }
+                if (neighborCity.isChecked()) {
+                    continue;
+                }
+                int distance = currentNode.getDistance() + currentNeighbor.distance();
+                System.out.println(currentNode.getName() + " - " + currentNeighbor.name());
+                System.out.println("distance " + distance);
+                System.out.println("currentDistance " + neighborCity.getDistance());
+                if (distance < neighborCity.getDistance()) {
+                    neighborCity.setDistance(distance);
+                }
+            }
+            currentNode.setChecked();
+            neighbors = currentNode.neighbors();
+            currentNode = City.empty();
+            while (!neighbors.isEmpty() && currentNode.isEmpty()) {
+                Neighbor currentNeighbor = neighbors.poll();
+                City neighborCity = graph.getOrDefault(currentNeighbor.name(), City.empty());
+                if (!neighborCity.isChecked()) {
+                    currentNode = neighborCity;
+                }
+            }
+        }
+        for (City city : graph.values()) {
+            System.out.println(city.getName() + ": " + city.getDistance());
+        }
+    }
+
+    private static Map<String, City> generateCitiesGraph() {
+        Map<String, City> graph = new HashMap<>();
+        List<String> cities = java.util.Arrays.asList("Москва", "Казань", "Нижний", "Саранск", "Питер", "Рязань");
+        for (String city : cities) {
+            PriorityQueue<Neighbor> neighbors = new PriorityQueue<>();
+            switch (city) {
+                case "Москва" -> {
+                    neighbors.add(new Neighbor("Нижний", 350));
+                    neighbors.add(new Neighbor("Питер", 750));
+                    neighbors.add(new Neighbor("Рязань", 200));
+                }
+                case "Рязань" -> {
+                    neighbors.add(new Neighbor("Москва", 200));
+                    neighbors.add(new Neighbor("Саранск", 450));
+                }
+                case "Казань" -> {
+                    neighbors.add(new Neighbor("Нижний", 350));
+                }
+                case "Нижний" -> {
+                    neighbors.add(new Neighbor("Казань", 350));
+                    neighbors.add(new Neighbor("Москва", 350));
+                    neighbors.add(new Neighbor("Саранск", 290));
+                }
+                case "Саранск" -> {
+                    neighbors.add(new Neighbor("Нижний", 290));
+                    neighbors.add(new Neighbor("Рязань", 450));
+                }
+                case "Питер" -> {
+                    neighbors.add(new Neighbor("Москва", 750));
+                }
+            }
+            graph.put(city, new City(city, neighbors));
+        }
+
+        return graph;
     }
 
     private static void ex77() {
