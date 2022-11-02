@@ -22,6 +22,7 @@ import java.util.*;
 
 public class App {
     private static final String NUMBERS_FILEPATH = "/home/klimandr/numbers";
+    private static final String TEXT_FILEPATH = "/home/klimandr/text";
 
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
@@ -35,6 +36,23 @@ public class App {
         } catch (Exception e) {
             ex();
         }
+    }
+
+    private static void ex77() {
+        Map<String, Integer> map = new TreeMap<>();
+        try (
+                FileReader reader = new FileReader(TEXT_FILEPATH);
+                Scanner scanner = new Scanner(reader);
+        ) {
+            while (scanner.hasNext()) {
+                String word = scanner.next().trim().replaceAll("[^A-Za-zА-Яа-яЁё0-9]", "");
+                map.put(word, map.getOrDefault(word, 0) + 1);
+            }
+        } catch (IOException e) {
+            System.out.println("[EXCEPTION] " + e.getMessage());
+        }
+
+        map.forEach((String word, Integer count) -> System.out.println(word + "  ---  " + count));
     }
 
     private static void ex72() {
