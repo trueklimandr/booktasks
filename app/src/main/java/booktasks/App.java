@@ -37,6 +37,48 @@ public class App {
         }
     }
 
+    private static void ex72() {
+        ArrayList<String> strings = generateStrings();
+        printStrings(strings);
+        System.out.println("----------------------------");
+        processStrings(strings);
+        printStrings(strings);
+    }
+
+    private static ArrayList<String> generateStrings() {
+        int size = 0;
+        while (size < 2) {
+            size = random.nextInt() % 10;
+        }
+        ArrayList<String> strings = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            final int index = i == 0 ? i : (size % i) + 1;
+            switch (i % 3) {
+                case 0 -> strings.add("Строка Первого Типа " + index);
+                case 1 -> strings.add("строка ВТОРОГО типа " + index);
+                default -> strings.add("СтрокА ТретьегО ТипА " + index);
+            }
+        }
+        return strings;
+    }
+
+    private static void printStrings(ArrayList<String> strings) {
+        for (String str : strings) {
+            System.out.println(str);
+        }
+    }
+
+    private static void processStrings(ArrayList<String> strings) {
+//        for (int i = 0; i < strings.size(); i++) {
+//            strings.set(i, processString(strings.get(i)));
+//        }
+        strings.replaceAll(App::processString);
+    }
+
+    private static String processString(String str) {
+        return str.toUpperCase();
+    }
+
     private static void ex71() {
         System.out.print("Type integer: ");
         int number = in.nextInt();
