@@ -18,7 +18,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+//import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 public class App {
     private static final String NUMBERS_FILEPATH = "/home/klimandr/numbers";
@@ -34,9 +39,43 @@ public class App {
         try {
             app.getClass().getDeclaredMethod("ex" + exercise.replace(".", "")).invoke(app);
         } catch (Exception e) {
-//            e.getCause().printStackTrace();
-            ex();
+            e.getCause().printStackTrace();
+//            ex();
         }
+    }
+
+    private static void ex8x2() throws IOException {
+        long m = System.currentTimeMillis();
+
+//        AtomicLong counter = new AtomicLong(0);
+//        counter.
+        String contents = Files.readString(Path.of("/home/klimandr/alice.txt"));
+        List<String> words = List.of(contents.split("\\PL+"));
+        System.out.println(words.size());
+
+        Optional<String> largest = words.stream().max(String::compareToIgnoreCase);
+        System.out.println("largest: " + largest.orElse(""));
+
+        boolean aWordStartsWithQ = words.stream().anyMatch(s -> s.startsWith("Q"));
+        System.out.println("aWordStartsWithQ: " + aWordStartsWithQ);
+
+        Optional<String> startsWithQ = words.stream().parallel().filter(s -> s.startsWith("Q")).findAny();
+        System.out.println("startsWithQ: " + startsWithQ.orElse("(None)"));
+        // Run the program again to see if it finds a different word
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
+    private static void ex8x1() {
+        Stream<BigInteger> integers = Stream.iterate(BigInteger.ONE, n -> n.add(BigInteger.ONE)).limit(80000000L);
+        //производительность упирается в конкуренцию потоков за ограниченный ресурс в виде этого итератора
+        long m = System.currentTimeMillis();
+        Optional<BigInteger> any = integers
+//                .parallel()
+                .filter(i -> i.compareTo(BigInteger.valueOf(49999999L)) > 0)
+                .findAny();
+        System.out.println("Найден элемент: " + any.get());
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
     }
 
     private static void ex710() {
