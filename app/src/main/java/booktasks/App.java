@@ -45,6 +45,27 @@ public class App {
         }
     }
 
+    private static void ex81() throws IOException {
+        long m = System.currentTimeMillis();
+
+        String contents = Files.readString(Path.of("/home/klimandr/alice.txt"));
+        List<String> words = List.of(contents.split("\\PL+"));
+
+        long count = words
+//            .parallelStream()
+            .stream()
+            .filter(w -> {
+                boolean isLong = w.length() > 12;
+                System.out.println("Processing " + w + (isLong ? " ++++++++++++++++" : ""));
+                return isLong;
+            })
+            .limit(5)
+            .count();
+        System.out.println(count);
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
     private static void ex8x2() throws IOException {
         long m = System.currentTimeMillis();
 
