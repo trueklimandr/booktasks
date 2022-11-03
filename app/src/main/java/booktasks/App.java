@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class App {
@@ -68,13 +69,17 @@ public class App {
 
     private static void ex8x1() {
         Stream<BigInteger> integers = Stream.iterate(BigInteger.ONE, n -> n.add(BigInteger.ONE)).limit(80000000L);
-        //производительность упирается в конкуренцию потоков за ограниченный ресурс в виде этого итератора
+        //производительность упирается в конкуренцию потоков за ограниченный ресурс в виде этого итератора, наверно
         long m = System.currentTimeMillis();
-        Optional<BigInteger> any = integers
-//                .parallel()
-                .filter(i -> i.compareTo(BigInteger.valueOf(49999999L)) > 0)
-                .findAny();
-        System.out.println("Найден элемент: " + any.get());
+        Map<Integer, Long> map = integers
+//            .parallel()
+            .filter(i -> i.compareTo(BigInteger.valueOf(49999999L)) > 0)
+            .collect(
+//                Collectors.groupingByConcurrent(BigInteger::bitLength,
+                Collectors.groupingBy(BigInteger::bitLength,
+                Collectors.counting())
+            );
+        map.forEach((i, l) -> System.out.println(i + ": " + l));
         System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
     }
 
