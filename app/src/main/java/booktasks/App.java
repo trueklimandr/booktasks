@@ -32,6 +32,7 @@ public class App {
     private static final String NUMBERS_FILEPATH = "/home/klimandr/numbers";
     private static final String TEXT_FILEPATH = "/home/klimandr/text";
     private static final String ALICE_TEXT_FILEPATH = "/home/klimandr/alice.txt";
+    private static final String WAP_TEXT_FILEPATH = "/home/klimandr/wap.txt";
 
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
@@ -46,6 +47,20 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    public static void ex817() {
+        long m = System.currentTimeMillis();
+
+        List<String> longestWords = getFileWords(WAP_TEXT_FILEPATH)
+            .stream()
+//            .parallel()
+            .sorted(Comparator.comparingInt(String::length))
+            .limit(500)
+            .toList();
+
+        System.out.println("Найдено слов: " + longestWords.size());
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
     }
 
     public static void ex816() {
