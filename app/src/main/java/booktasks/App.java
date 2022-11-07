@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class App {
@@ -44,6 +43,26 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    public static void ex87() {
+        String filepath = "/home/klimandr/alice.txt";
+        String contents = null;
+        try {
+            contents = Files.readString(Path.of(filepath));
+        } catch (IOException e) {
+            System.out.println("File reading error");
+        }
+        List<String> words = List.of(contents.split("\\PL+"));
+
+        System.out.println("The real ten words:");
+        words.stream().filter(App::isRightWord).limit(10).forEach(System.out::println);
+
+        System.out.println("The most frequent ten words:");
+        getTextMap(filepath).entrySet().stream()
+            .sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
+            .limit(10)
+            .forEach(System.out::println);
     }
 
     public static void ex86() {
@@ -209,20 +228,24 @@ public class App {
     }
 
     private static void ex77() {
+        getTextMap(TEXT_FILEPATH).forEach((String word, Integer count) -> System.out.println(word + "  ---  " + count));
+    }
+
+    private static Map<String, Integer> getTextMap(String filepath) {
         Map<String, Integer> map = new TreeMap<>();
         try (
-                FileReader reader = new FileReader(TEXT_FILEPATH);
+                FileReader reader = new FileReader(filepath);
                 Scanner scanner = new Scanner(reader);
         ) {
             while (scanner.hasNext()) {
-                String word = scanner.next().trim().replaceAll("[^A-Za-zА-Яа-яЁё0-9]", "");
+                String word = scanner.next().trim().replaceAll("[^A-Za-zА-Яа-яЁё0-9]", "").toLowerCase();
                 map.put(word, map.getOrDefault(word, 0) + 1);
             }
         } catch (IOException e) {
             System.out.println("[EXCEPTION] " + e.getMessage());
         }
 
-        map.forEach((String word, Integer count) -> System.out.println(word + "  ---  " + count));
+        return map;
     }
 
     private static void ex72() {
