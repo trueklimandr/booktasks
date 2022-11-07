@@ -48,6 +48,18 @@ public class App {
         }
     }
 
+    public static void ex816() {
+        Stream<BigInteger> integers = Stream
+            .iterate(new BigInteger("1" + "0".repeat(49)), n -> n.add(BigInteger.ONE));
+        long m = System.currentTimeMillis();
+        List<BigInteger> list = integers
+//            .parallel()
+            .filter(i -> i.isProbablePrime(100))
+            .limit(50)
+            .toList();
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
     public static <T> ArrayList<T> join(Stream<ArrayList<T>> stream) {
         return stream.reduce(new ArrayList<T>(), App::joinLists, App::joinLists);
     }
