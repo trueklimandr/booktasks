@@ -10,6 +10,7 @@ import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
 import com.google.common.base.Strings;
+import com.google.common.collect.Streams;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
@@ -23,12 +24,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class App {
     private static final String NUMBERS_FILEPATH = "/home/klimandr/numbers";
     private static final String TEXT_FILEPATH = "/home/klimandr/text";
+    private static final String ALICE_TEXT_FILEPATH = "/home/klimandr/alice.txt";
 
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
@@ -45,18 +48,44 @@ public class App {
         }
     }
 
+    public static <T> ArrayList<T> join(Stream<ArrayList<T>> stream) {
+        return stream.reduce(new ArrayList<T>(), App::joinLists, App::joinLists);
+    }
+
+    public static <T> ArrayList<T> joinLists(ArrayList<T> first, ArrayList<T> second) {
+        first.addAll(second);
+        return first;
+    }
+
+    public static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
+        return Streams.zip(first, second, Stream::of).flatMap(Function.identity());
+    }
+
+    private static <T> boolean isStreamFinite(Stream<T> stream) {
+        return stream.spliterator().estimateSize() != Long.MAX_VALUE;
+    }
+
+    public static void ex811() {
+        Optional<List<String>> longestWords = getFileWords(TEXT_FILEPATH)
+            .stream()
+            .collect(Collectors.groupingBy(String::length))
+            .entrySet()
+            .stream()
+            .max(Map.Entry.comparingByKey())
+            .map(Map.Entry::getValue);
+        System.out.println(longestWords.orElse(new ArrayList<>()));
+    }
+
+    public static void ex810() {
+        OptionalDouble length = getFileWords(TEXT_FILEPATH).stream().mapToInt(String::length).average();
+        System.out.println("Средняя длина строки: " + length.orElse(0));
+    }
+
     public static void ex87() {
-        String filepath = "/home/klimandr/alice.txt";
-        String contents = null;
-        try {
-            contents = Files.readString(Path.of(filepath));
-        } catch (IOException e) {
-            System.out.println("File reading error");
-        }
-        List<String> words = List.of(contents.split("\\PL+"));
+        String filepath = ALICE_TEXT_FILEPATH;
 
         System.out.println("The real ten words:");
-        words.stream().filter(App::isRightWord).limit(10).forEach(System.out::println);
+        getFileWords(filepath).stream().filter(App::isRightWord).limit(10).forEach(System.out::println);
 
         System.out.println("The most frequent ten words:");
         getTextMap(filepath).entrySet().stream()
@@ -93,8 +122,7 @@ public class App {
     private static void ex81() throws IOException {
         long m = System.currentTimeMillis();
 
-        String contents = Files.readString(Path.of("/home/klimandr/alice.txt"));
-        List<String> words = List.of(contents.split("\\PL+"));
+        List<String> words = getFileWords(ALICE_TEXT_FILEPATH);
 
         long count = words
 //            .parallelStream()
@@ -116,8 +144,7 @@ public class App {
 
 //        AtomicLong counter = new AtomicLong(0);
 //        counter.
-        String contents = Files.readString(Path.of("/home/klimandr/alice.txt"));
-        List<String> words = List.of(contents.split("\\PL+"));
+        List<String> words = getFileWords(ALICE_TEXT_FILEPATH);
         System.out.println(words.size());
 
         Optional<String> largest = words.stream().max(String::compareToIgnoreCase);
@@ -131,6 +158,16 @@ public class App {
         // Run the program again to see if it finds a different word
 
         System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
+    private static List<String> getFileWords(String filepath) {
+        String contents = null;
+        try {
+            contents = Files.readString(Path.of(filepath));
+        } catch (IOException e) {
+            System.out.println("File reading error");
+        }
+        return List.of(contents.split("\\PL+"));
     }
 
     private static void ex8x1() {
