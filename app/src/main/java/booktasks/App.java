@@ -45,6 +45,17 @@ public class App {
         }
     }
 
+    private static void ex84() {
+        System.out.print("Type x0 (integer): ");
+        int x0 = in.nextInt();
+        Stream<Long> stream = getRandomStream(x0, 25214903917L, 11, (long) Math.pow(2, 48));
+        stream.limit(10).forEach(System.out::println);
+    }
+
+    private static Stream<Long> getRandomStream(long xn, long a, long c, long m) {
+        return Stream.iterate(xn, n -> (a * n + c) % m);
+    }
+
     private static void ex81() throws IOException {
         long m = System.currentTimeMillis();
 
