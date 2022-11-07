@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class App {
@@ -43,6 +44,20 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    public static void ex86() {
+        System.out.print("Type a word: ");
+        String string = in.next();
+        System.out.println("It's " + (isRightWord(string) ? "" : "not ") + "a word");
+    }
+
+    private static boolean isRightWord(String string) {
+        return string.codePoints().allMatch(Character::isAlphabetic);
+    }
+
+    public static Stream<String> codePoints(String s) {
+        return s.codePoints().mapToObj(cp -> new String(new int [] { cp }, 0, 1));
     }
 
     private static void ex84() {
