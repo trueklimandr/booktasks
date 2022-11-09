@@ -9,7 +9,6 @@ import booktasks.classes.Stack;
 import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
 import com.opencsv.CSVReader;
@@ -18,7 +17,8 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +51,20 @@ public class App {
         }
     }
 
+    public static void ex99() {
+        try {
+            URL url = new URL("https://www.google.com/");
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            try (InputStream in = connection.getInputStream()) {
+                byte[] bytes = in.readAllBytes();
+                System.out.println(new String(bytes, StandardCharsets.UTF_8));
+            }
+        } catch (IOException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
     public static void ex97() {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
@@ -58,14 +72,18 @@ public class App {
             byte[] bytes = messageDigest.digest();
             //This byte[] has bytes in decimal format;
             //Convert it to hexadecimal format
-            StringBuilder sb = new StringBuilder();
-            for (byte aByte : bytes) {
-                sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
-            }
-            System.out.println(sb);
+            System.out.println(getStringFromDecimalBytesArray(bytes));
         } catch (NoSuchAlgorithmException | IOException e) {
             System.out.println("ERROR, YO!");
         }
+    }
+
+    private static String getStringFromDecimalBytesArray(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte aByte : bytes) {
+            sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
     }
 
     public static void ex94() {
