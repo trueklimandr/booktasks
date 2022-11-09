@@ -47,6 +47,47 @@ public class App {
         }
     }
 
+    public static void ex94() {
+        Path wapPath = Path.of(WAP_TEXT_FILEPATH);
+
+        long m = System.currentTimeMillis();
+        try (Scanner in = new Scanner(Files.newInputStream(wapPath))) {
+            int linesCount = 0;
+            while (in.hasNextLine()) {
+                linesCount++;
+                in.nextLine();
+            }
+            System.out.println("Lines count: " + linesCount);
+        } catch (IOException e) {
+            System.out.println("STREAMS ERROR: " + e.getMessage());
+        }
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+
+        m = System.currentTimeMillis();
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(Files.newInputStream(wapPath))
+        )) {
+            int linesCount = 0;
+            while (reader.readLine() != null) {
+                linesCount++;
+            }
+            System.out.println("Lines count: " + linesCount);
+        } catch (IOException e) {
+            System.out.println("STREAMS ERROR: " + e.getMessage());
+        }
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+
+        m = System.currentTimeMillis();
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(Files.newInputStream(wapPath))
+        )) {
+            System.out.println("Lines count: " + reader.lines().count());
+        } catch (IOException e) {
+            System.out.println("STREAMS ERROR: " + e.getMessage());
+        }
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
     public static void ex92() {
         System.out.print("Type filepath: ");
         saveTextFileStats(in.nextLine());
