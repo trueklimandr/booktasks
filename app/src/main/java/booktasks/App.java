@@ -9,6 +9,7 @@ import booktasks.classes.Stack;
 import booktasks.exceptions.IllegalFileFormatException;
 import booktasks.interfaces.IntSequence;
 import booktasks.interfaces.Measurable;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
 import com.opencsv.CSVReader;
@@ -17,9 +18,12 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -44,6 +48,23 @@ public class App {
         } catch (Exception e) {
             e.getCause().printStackTrace();
 //            ex();
+        }
+    }
+
+    public static void ex97() {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+            messageDigest.update(Files.readAllBytes(Path.of(ALICE_TEXT_FILEPATH)));
+            byte[] bytes = messageDigest.digest();
+            //This byte[] has bytes in decimal format;
+            //Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for (byte aByte : bytes) {
+                sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+            }
+            System.out.println(sb);
+        } catch (NoSuchAlgorithmException | IOException e) {
+            System.out.println("ERROR, YO!");
         }
     }
 
