@@ -15,11 +15,9 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -47,6 +45,61 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    public static void ex92() {
+        System.out.print("Type filepath: ");
+        saveTextFileStats(in.nextLine());
+    }
+
+    private static void saveTextFileStats(String filepath) {
+        Path source = Path.of(filepath);
+        Path target = source.resolveSibling(
+            Path.of(source.getFileName().toString().replaceFirst("\\..+$", "") + ".toc")
+        );
+        try {
+            List<Word> words = new ArrayList<>();
+            List<String> lines = Files.readAllLines(source, StandardCharsets.UTF_8);
+            int currentLine = 0;
+            while (currentLine < lines.size()) {
+
+                for (String w : List.of(lines.get(currentLine).split("\\PL+"))) {
+                    if (w.matches("[A-Za-zА-Яа-яЁё0-9]+")) {
+                        words.add(new Word(currentLine, w));
+                    }
+                }
+                currentLine++;
+            }
+
+            Map<String, Set<Integer>> wordsList = words
+                .stream()
+                .collect(Collectors.groupingBy(Word::content, Collectors.mapping(Word::number, Collectors.toSet())));
+
+            Files.writeString(target, wordsList.entrySet().stream()
+                .reduce(
+                    "",
+                    (total, entry) -> total + "\n" + entry.getKey() + " ------ " + entry.getValue().toString(),
+                    (total1, total2) -> total1 + total2
+                )
+            );
+        } catch (IOException e) {
+            System.out.println("STREAMS ERROR: " + e.getMessage());
+        }
+    }
+
+    public static void ex91() {
+        try (
+            InputStream in = Files.newInputStream(Path.of(ALICE_TEXT_FILEPATH));
+            OutputStream out = Files.newOutputStream(Path.of("/home/klimandr/test_file_copy"))
+        ) {
+            copyStreams(in, out);
+        } catch (IOException e) {
+            System.out.println("STREAMS ERROR: " + e.getMessage());
+        }
+    }
+
+    private static void copyStreams(InputStream in, OutputStream out) throws IOException {
+        in.transferTo(out);
     }
 
     public static void ex817() {
