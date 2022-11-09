@@ -27,6 +27,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,6 +51,38 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    public static void ex910() {
+        System.out.print("Type string with integers: ");
+        String string = in.nextLine();
+
+        List<Integer> numbers = getNumbersListFromStringUsingSplit(string);
+        System.out.println("Using split:");
+        numbers.forEach(System.out::println);
+
+        numbers = getNumbersListFromStringUsingFind(string);
+        System.out.println("Using find:");
+        numbers.forEach(System.out::println);
+    }
+
+    private static List<Integer> getNumbersListFromStringUsingSplit(String string) {
+        return java.util.Arrays
+            .stream(string.split("[^-0-9]"))
+            .filter(s -> !s.isBlank())
+            .map(Integer::valueOf)
+            .toList();
+    }
+
+    private static ArrayList<Integer> getNumbersListFromStringUsingFind(String string) {
+        ArrayList<Integer> list = new ArrayList<>();
+
+        Matcher matcher = Pattern.compile("-?\\d+").matcher(string);
+        while (matcher.find()) {
+            list.add(Integer.valueOf(matcher.group()));
+        }
+
+        return list;
     }
 
     public static void ex99() {
