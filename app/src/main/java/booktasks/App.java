@@ -56,6 +56,18 @@ public class App {
         }
     }
 
+    private static void ex101() {
+        Path directory = Path.of("/home");
+        try (Stream<Path> entries = Files.walk(directory).parallel()) {
+            entries
+                .filter(Files::isRegularFile)
+                .filter(path -> getFileWords(path.toString()).contains("Alice"))
+                .forEach(System.out::println);
+        } catch (IOException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
     private static boolean done = false;
 
     public static void ex10x2() {
@@ -398,9 +410,9 @@ public class App {
         try {
             contents = Files.readString(Path.of(filepath));
         } catch (IOException e) {
-            System.out.println("File reading error");
+//            System.out.println("File reading error");
         }
-        return List.of(contents.split("\\PL+"));
+        return List.of((contents == null ? "" : contents).split("\\PL+"));
     }
 
     private static void ex8x1() {
