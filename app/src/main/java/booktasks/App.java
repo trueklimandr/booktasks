@@ -26,6 +26,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +54,42 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    private static boolean done = false;
+
+    public static void ex10x2() {
+        Runnable hellos = () -> {
+            for (int i = 1; i <= 1000; i++)
+                System.out.println("Hello " + i);
+            done = true;
+        };
+        Runnable goodbye = () -> {
+            int i = 1;
+            while (!done) i++;
+            System.out.println("Goodbye " + i);
+        };
+        Executor executor = Executors.newCachedThreadPool();
+        executor.execute(hellos);
+        executor.execute(goodbye);
+    }
+
+    public static void ex10x1() {
+        System.out.println("Имеем " + Runtime.getRuntime().availableProcessors() + " процессоров");
+
+        Runnable hellos = () -> {
+            for (int i = 1; i <= 1000; i++)
+                System.out.println("Hello " + i);
+        };
+        Runnable goodbyes = () -> {
+            for (int i = 1; i <= 1000; i++)
+                System.out.println("Goodbye " + i);
+        };
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.execute(hellos);
+        executor.execute(goodbyes);
+        executor.shutdown();
     }
 
     public static void ex910() {
@@ -365,11 +404,15 @@ public class App {
     }
 
     private static void ex8x1() {
-        Stream<BigInteger> integers = Stream.iterate(BigInteger.ONE, n -> n.add(BigInteger.ONE)).limit(80000000L);
-        //производительность упирается в конкуренцию потоков за ограниченный ресурс в виде этого итератора, наверно
+        Stream<BigInteger> integers = Stream.iterate(BigInteger.ONE, n -> n.add(BigInteger.ONE)).limit(60000000L);
+        //производительность упирается в конкуренцию потоков за ограниченный ресурс в виде этого итератора
+        //теперь можно оценить производительность потоков отдельно от формирования списка чисел
+        Stream<BigInteger> storedIntegers = integers.toList()
+//            .stream()
+            .parallelStream()
+        ;
         long m = System.currentTimeMillis();
-        Map<Integer, Long> map = integers
-//            .parallel()
+        Map<Integer, Long> map = storedIntegers
             .filter(i -> i.compareTo(BigInteger.valueOf(49999999L)) > 0)
             .collect(
 //                Collectors.groupingByConcurrent(BigInteger::bitLength,
