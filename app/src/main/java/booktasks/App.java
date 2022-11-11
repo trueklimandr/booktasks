@@ -59,6 +59,12 @@ public class App {
         }
     }
 
+    private static String getConcurrentHashMapMaxValueKey(ConcurrentHashMap<String, Long> hashMap) {
+        return hashMap
+            .reduceEntries(1, ((e1, e2) -> e1.getValue().compareTo(e2.getValue()) > 0 ? e1 : e2))
+            .getKey();
+    }
+
     private static void ex106() {
         ConcurrentHashMap<String, Set<File>> filesWords = new ConcurrentHashMap<>();
 
