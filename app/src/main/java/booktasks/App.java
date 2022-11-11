@@ -56,6 +56,33 @@ public class App {
         }
     }
 
+    private static void ex102() {
+        int size = 100000000;
+
+        long[] array = getRandomArray(size);
+
+        long m = System.currentTimeMillis();
+        java.util.Arrays.sort(array);
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+
+        array = getRandomArray(size);
+
+        m = System.currentTimeMillis();
+        java.util.Arrays.parallelSort(array);
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
+    private static long[] getRandomArray(int size) {
+        long[] array = new long[size];
+        Stream<Long> randomStream = getRandomStream(1000, 25214903917L, 11, (long) Math.pow(2, 48));
+        int i = 0;
+        for (Object number : randomStream.limit(size).toArray()) {
+            array[i] = (long) number;
+        }
+
+        return array;
+    }
+
     private static void ex101() {
         Path directory = Path.of("/home");
         try (Stream<Path> entries = Files.walk(directory).parallel()) {
