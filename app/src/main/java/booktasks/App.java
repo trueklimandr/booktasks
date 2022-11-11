@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -39,6 +40,10 @@ public class App {
     private static final String ALICE_TEXT_FILEPATH = "/home/klimandr/alice.txt";
     private static final String WAP_TEXT_FILEPATH = "/home/klimandr/wap.txt";
 
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_RESET = "\u001B[0m";
+
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
 
@@ -49,9 +54,56 @@ public class App {
         try {
             app.getClass().getDeclaredMethod("ex" + exercise.replace(".", "")).invoke(app);
         } catch (Exception e) {
-            e.getCause().printStackTrace();
+            (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex106() {
+        ConcurrentHashMap<String, Set<File>> filesWords = new ConcurrentHashMap<>();
+
+        try (Stream<Path> entries = Files.walk(Path.of("/home/klimandr")).parallel()) {
+            entries
+                .filter(Files::isRegularFile)
+                .forEach(path -> {
+                    getFileWords(path.toString())
+                        .forEach(word -> filesWords.merge(
+                            word,
+                            new HashSet<>(Collections.singletonList(path.toFile())),
+                            (oldV, newV) -> {
+                                oldV.addAll(newV);
+                                return oldV;
+                            }
+                        ));
+                });
+        } catch (UncheckedIOException | IOException e) {
+            System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+        }
+
+        filesWords.entrySet().stream()
+            .filter(entry -> entry.getKey().length() > 2 && entry.getValue().size() > 1)
+            .limit(10)
+            .forEach((entry) -> {
+                String key = entry.getKey();
+                Set<File> set = entry.getValue();
+                if (set.size() > 2) {
+                    System.out.println(
+                        ANSI_GREEN + key + ANSI_RESET + ": "
+                            + set.stream().map(Object::toString).collect(Collectors.joining(", "))
+                            + "\n"
+                    );
+                }
+            });
+
+//        filesWords.forEach((key, set) -> {
+//            if (set.size() > 2) {
+//                System.out.println(
+//                    ANSI_GREEN + key + ANSI_RESET + ": "
+//                        + set.stream().map(Object::toString).collect(Collectors.joining(", "))
+//                        + "\n"
+//                );
+//            }
+//        });
     }
 
     private static void ex103() {
@@ -66,7 +118,7 @@ public class App {
                 .filter(path -> !path.getFileName().toString().matches("App.java"))
                 .forEach(path -> tasks.add(getTask(path, word)));
         } catch (UncheckedIOException | IOException e) {
-            System.out.println("ERROR: " + e.getMessage());
+            System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
         }
 
         try {
