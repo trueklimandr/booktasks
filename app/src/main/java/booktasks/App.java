@@ -20,7 +20,6 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -29,6 +28,7 @@ import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -59,6 +59,59 @@ public class App {
             (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex1011() {
+        LinkedBlockingQueue<String> q = new LinkedBlockingQueue<>();
+        Runnable task = () -> {
+            try (Stream<Path> entries = Files.walk(Path.of("/home/klimandr"))) {
+                entries
+                    .filter(Files::isRegularFile)
+                    .forEach(path -> {
+                        try {
+                            q.put(path.toString());
+                        } catch (InterruptedException ignored) {
+                        }
+                    });
+            } catch (UncheckedIOException | IOException e) {
+                System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+            } finally {
+                try {
+                    q.put("");
+                } catch (InterruptedException e) {
+                    System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+                }
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+
+        String searchWord = "stop";
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.execute(() -> {
+            String path;
+            while (true) {
+                try {
+                    path = q.remove();
+                } catch (NoSuchElementException e) {
+                    continue;
+                }
+
+                if (path.isBlank()) {
+                    executor.shutdown();
+                    break;
+                }
+
+                if (getFileWords(path).contains(searchWord)) {
+                    System.out.println(ANSI_GREEN + path + ANSI_RESET);
+                }
+            }
+        });
+    }
+
+    private static void ex1010() {
+        LongAccumulator maxLongAccumulator = new LongAccumulator(Long::max, 0);
+        LongAccumulator minLongAccumulator = new LongAccumulator(Long::min, Long.MAX_VALUE);
     }
 
     private static void ex109() {
