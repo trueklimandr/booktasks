@@ -26,9 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +52,42 @@ public class App {
             e.getCause().printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex103() {
+        String word = "warm";
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<Callable<String>> tasks = new ArrayList<>();
+
+        Path directory = Path.of("/home/klimandr");
+        try (Stream<Path> entries = Files.walk(directory).parallel()) {
+            entries
+                .filter(Files::isRegularFile)
+                .filter(path -> !path.getFileName().toString().matches("App.java"))
+                .forEach(path -> tasks.add(getTask(path, word)));
+        } catch (UncheckedIOException | IOException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+
+        try {
+            System.out.println(executor.invokeAny(tasks, 2, TimeUnit.SECONDS));
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        } catch (TimeoutException e) {
+            System.out.println("Negative");
+        }
+
+        executor.shutdown();
+    }
+
+    private static Callable<String> getTask(Path path, String word) {
+        return () -> {
+            if (getFileWords(path.toString()).contains(word)) {
+                return path.toString();
+            } else {
+                throw new Exception("Negative");
+            }
+        };
     }
 
     private static void ex102() {
