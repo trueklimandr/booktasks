@@ -28,6 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 //import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +59,44 @@ public class App {
             (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex109() {
+        int count = 1000;
+
+        AtomicLong atomicCounter = new AtomicLong(1);
+        LongAdder adderCounter = new LongAdder();
+        adderCounter.increment();
+
+        long m = System.currentTimeMillis();
+
+        ExecutorService executor = Executors.newFixedThreadPool(count);
+        for (int i = 1; i <= count; i++) {
+            executor.execute(() -> {
+                for (int j = 1; j <= 100000; j++) {
+                    atomicCounter.incrementAndGet();
+                }
+            });
+        }
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+
+        executor.shutdown();
+
+        m = System.currentTimeMillis();
+
+        executor = Executors.newFixedThreadPool(count);
+        for (int i = 1; i <= count; i++) {
+            executor.execute(() -> {
+                for (int j = 1; j <= 100000; j++) {
+                    adderCounter.increment();
+                }
+            });
+        }
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+
+        executor.shutdown();
     }
 
     private static String getConcurrentHashMapMaxValueKey(ConcurrentHashMap<String, Long> hashMap) {
