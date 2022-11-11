@@ -74,10 +74,8 @@ public class App {
 
     private static long[] getRandomArray(int size) {
         long[] array = new long[size];
-        Stream<Long> randomStream = getRandomStream(1000, 25214903917L, 11, (long) Math.pow(2, 48));
-        int i = 0;
-        for (Object number : randomStream.limit(size).toArray()) {
-            array[i] = (long) number;
+        for (int i = 0; i < size; i++) {
+            array[i] = random.nextLong();
         }
 
         return array;
