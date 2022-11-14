@@ -61,29 +61,52 @@ public class App {
         }
     }
 
+    private static void ex1012() {
+        LinkedBlockingQueue<String> tasks = new LinkedBlockingQueue<>();
+        Thread thread = new Thread(getFillQueueTask(tasks));
+        thread.start();
+
+        LinkedBlockingQueue<HashMap<String, Integer>> results = new LinkedBlockingQueue<>();
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.execute(() -> {
+            String path;
+            while (true) {
+                try {
+                    path = tasks.remove();
+                } catch (NoSuchElementException e) {
+                    continue;
+                }
+
+                if (path.isBlank()) {
+                    executor.shutdown();
+                    break;
+                }
+
+                ThreadLocal<HashMap<String, Integer>> map = ThreadLocal.withInitial(HashMap::new);
+                getFileWords(path).forEach(word -> map.get().put(word, map.get().getOrDefault(word, 0) + 1));
+
+                results.add(map.get());
+            }
+        });
+
+        HashMap<String, Integer> result = new HashMap<>();
+        while (true) {
+            if (!executor.isTerminated()) {
+                continue;
+            }
+            HashMap<String, Integer> wordsMap = results.remove();
+            wordsMap.forEach((word, count) -> result.put(word, result.getOrDefault(word, 0) + count));
+            break;
+        }
+
+        result.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())).limit(10)
+            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
+    }
+
     private static void ex1011() {
         LinkedBlockingQueue<String> q = new LinkedBlockingQueue<>();
-        Runnable task = () -> {
-            try (Stream<Path> entries = Files.walk(Path.of("/home/klimandr"))) {
-                entries
-                    .filter(Files::isRegularFile)
-                    .forEach(path -> {
-                        try {
-                            q.put(path.toString());
-                        } catch (InterruptedException ignored) {
-                        }
-                    });
-            } catch (UncheckedIOException | IOException e) {
-                System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
-            } finally {
-                try {
-                    q.put("");
-                } catch (InterruptedException e) {
-                    System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
-                }
-            }
-        };
-        Thread thread = new Thread(task);
+        Thread thread = new Thread(getFillQueueTask(q));
         thread.start();
 
         String searchWord = "stop";
@@ -107,6 +130,29 @@ public class App {
                 }
             }
         });
+    }
+
+    private static Runnable getFillQueueTask(LinkedBlockingQueue<String> q) {
+        return () -> {
+            try (Stream<Path> entries = Files.walk(Path.of("/home/klimandr"))) {
+                entries
+                    .filter(Files::isRegularFile)
+                    .forEach(path -> {
+                        try {
+                            q.put(path.toString());
+                        } catch (InterruptedException ignored) {
+                        }
+                    });
+            } catch (UncheckedIOException | IOException e) {
+                System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+            } finally {
+                try {
+                    q.put("");
+                } catch (InterruptedException e) {
+                    System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+                }
+            }
+        };
     }
 
     private static void ex1010() {
