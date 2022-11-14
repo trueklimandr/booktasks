@@ -51,8 +51,6 @@ public class App {
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
 
-    public static long count = 0;
-
     public static void main(String[] args) {
         System.out.print("Type exercise in the format like [chapterNumber].[exerciseNumber]: ");
         String exercise = in.nextLine();
@@ -66,22 +64,13 @@ public class App {
     }
 
     private static void ex1017() throws InterruptedException {
+        LongAdder count = new LongAdder();
         List<Thread> threads = new ArrayList<>();
-        Lock countLock = new ReentrantLock();
         Path directory = Path.of("/home/klimandr");
         try (Stream<Path> entries = Files.walk(directory).parallel()) {
             entries
                 .filter(Files::isRegularFile)
-                .forEach(path -> {
-                    threads.add(new Thread(() -> {
-                        countLock.lock();
-                        try {
-                            count += getFileWords(path.toString()).size();
-                        } finally {
-                            countLock.unlock();
-                        }
-                    }));
-                });
+                .forEach(path -> threads.add(new Thread(() -> count.add(getFileWords(path.toString()).size()))));
         } catch (UncheckedIOException | IOException e) {
             System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
         }
