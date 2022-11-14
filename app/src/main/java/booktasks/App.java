@@ -61,6 +61,26 @@ public class App {
         }
     }
 
+    private static void ex1015() {
+        long m = System.currentTimeMillis();
+
+        ConcurrentHashMap<String, Integer> result = new ConcurrentHashMap<>();
+
+        Path directory = Path.of("/home/klimandr");
+        try (Stream<Path> entries = Files.walk(directory).parallel()) {
+            entries
+                .filter(Files::isRegularFile)
+                .forEach(path -> getFileWords(path.toString()).forEach(word -> result.merge(word, 1, Integer::sum)));
+        } catch (UncheckedIOException | IOException e) {
+            System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+        }
+
+        result.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())).limit(10)
+            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
+    }
+
     private static void ex1014() {
 //        ExecutorService executor = Executors.newCachedThreadPool();
 //        ExecutorCompletionService service = new ExecutorCompletionService(executor);
@@ -95,6 +115,8 @@ public class App {
     }
 
     private static void ex1013() {
+        long m = System.currentTimeMillis();
+
         List<Callable<Map<String, Integer>>> tasks = new ArrayList<>();
 
         Path directory = Path.of("/home/klimandr");
@@ -127,7 +149,9 @@ public class App {
         });
 
         result.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())).limit(10)
-            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
+            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue() + ANSI_RESET));
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
     }
 
     private static Callable<Map<String, Integer>> getFileTask(Path path) {
@@ -138,7 +162,9 @@ public class App {
         };
     }
 
-    private static void ex1012() {//работает неправильно (как-будто в результате содержатся данные только по одному файлу), некогда исправлять
+    private static void ex1012() {//работает неправильно (как будто в результате содержатся данные только по одному файлу), некогда исправлять
+        long m = System.currentTimeMillis();
+
         LinkedBlockingQueue<String> tasks = new LinkedBlockingQueue<>();
         Thread thread = new Thread(getFillQueueTask(tasks));
         thread.start();
@@ -178,10 +204,14 @@ public class App {
         }
 
         result.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())).limit(10)
-            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
+            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue() + ANSI_RESET));
+
+        System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
     }
 
-    private static void ex1011() {//работает неправильно (как-будто в результате содержатся данные только по одному файлу), некогда исправлять
+    private static void ex1011() {//работает неправильно (как будто в результате содержатся данные только по одному файлу), некогда исправлять
+        long m = System.currentTimeMillis();
+
         LinkedBlockingQueue<String> q = new LinkedBlockingQueue<>();
         Thread thread = new Thread(getFillQueueTask(q));
         thread.start();
@@ -199,6 +229,7 @@ public class App {
 
                 if (path.isBlank()) {
                     executor.shutdown();
+                    System.out.println("Время выполнения: " + (System.currentTimeMillis() - m) / 1000.0);
                     break;
                 }
 
