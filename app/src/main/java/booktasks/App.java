@@ -61,7 +61,51 @@ public class App {
         }
     }
 
-    private static void ex1012() {
+    private static void ex1013() {
+        List<Callable<Map<String, Integer>>> tasks = new ArrayList<>();
+
+        Path directory = Path.of("/home/klimandr");
+        try (Stream<Path> entries = Files.walk(directory).parallel()) {
+            entries
+                .filter(Files::isRegularFile)
+                .forEach(path -> tasks.add(getFileTask(path)));
+        } catch (UncheckedIOException | IOException e) {
+            System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+        }
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<Future<Map<String, Integer>>> results;
+        try {
+            results = executor.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            System.out.println("ERROR: " + e.getMessage());
+            return;
+        } finally {
+            executor.shutdown();
+        }
+
+        HashMap<String, Integer> result = new HashMap<>();
+        results.forEach(f -> {
+            try {
+                f.get().forEach((word, count) -> result.put(word, result.getOrDefault(word, 0) + count));
+            } catch (ExecutionException| InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        result.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())).limit(10)
+            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
+    }
+
+    private static Callable<Map<String, Integer>> getFileTask(Path path) {
+        return () -> {
+            ThreadLocal<HashMap<String, Integer>> map = ThreadLocal.withInitial(HashMap::new);
+            getFileWords(path.toString()).forEach(word -> map.get().put(word, map.get().getOrDefault(word, 0) + 1));
+            return map.get();
+        };
+    }
+
+    private static void ex1012() {//работает неправильно (как-будто в результате содержатся данные только по одному файлу), некогда исправлять
         LinkedBlockingQueue<String> tasks = new LinkedBlockingQueue<>();
         Thread thread = new Thread(getFillQueueTask(tasks));
         thread.start();
@@ -104,7 +148,7 @@ public class App {
             .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
     }
 
-    private static void ex1011() {
+    private static void ex1011() {//работает неправильно (как-будто в результате содержатся данные только по одному файлу), некогда исправлять
         LinkedBlockingQueue<String> q = new LinkedBlockingQueue<>();
         Thread thread = new Thread(getFillQueueTask(q));
         thread.start();
