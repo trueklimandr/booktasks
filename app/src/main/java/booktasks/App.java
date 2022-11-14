@@ -30,8 +30,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +59,29 @@ public class App {
             (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex1025() throws ExecutionException, InterruptedException {
+        System.out.println("Введите url: ");
+        String url = in.nextLine();
+
+        CompletableFuture<Void> future = CompletableFuture
+            .supplyAsync(() -> {
+                try {
+                    return getUrlContent(url);
+                } catch (IOException e) {
+                    System.out.println("ERROR: " + e.getMessage());
+                    return "";
+                }
+            })
+            .thenAccept((content) -> {
+                Matcher matcher = Pattern.compile("href=\"(http.*?)\"").matcher(content);
+                while (matcher.find()) {
+                    System.out.println(ANSI_GREEN + matcher.group(1) + ANSI_RESET);
+                }
+            });
+
+        future.get();
     }
 
     private static void ex1017() throws InterruptedException {
@@ -526,15 +547,19 @@ public class App {
 
     public static void ex99() {
         try {
-            URL url = new URL("https://www.google.com/");
-            URLConnection connection = url.openConnection();
-            connection.connect();
-            try (InputStream in = connection.getInputStream()) {
-                byte[] bytes = in.readAllBytes();
-                System.out.println(new String(bytes, StandardCharsets.UTF_8));
-            }
+            System.out.println(getUrlContent("https://www.google.com/"));
         } catch (IOException e) {
             System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    private static String getUrlContent(String urlString) throws IOException {
+        URL url = new URL(urlString);
+        URLConnection connection = url.openConnection();
+        connection.connect();
+        try (InputStream in = connection.getInputStream()) {
+            byte[] bytes = in.readAllBytes();
+            return new String(bytes, StandardCharsets.UTF_8);
         }
     }
 
