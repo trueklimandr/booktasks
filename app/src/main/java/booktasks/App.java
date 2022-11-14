@@ -61,6 +61,39 @@ public class App {
         }
     }
 
+    private static void ex1014() {
+//        ExecutorService executor = Executors.newCachedThreadPool();
+//        ExecutorCompletionService service = new ExecutorCompletionService(executor);
+//        List<Callable<Map<String, Integer>>> tasks = new ArrayList<>();
+//
+//        Path directory = Path.of("/home/klimandr");
+//        try (Stream<Path> entries = Files.walk(directory).parallel()) {
+//            entries
+//                .filter(Files::isRegularFile)
+//                .forEach(path -> tasks.add(getFileTask(path)));
+//        } catch (UncheckedIOException | IOException e) {
+//            System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+//        }
+//
+//        for (Callable<Map<String, Integer>> task : tasks) {
+//            service.submit(task);
+//        }
+//
+//        HashMap<String, Integer> result = new HashMap<>();
+//        for (int i = 0; i < tasks.size(); i++) {
+//            try {
+//                Map<String, Integer> oneResult = service.take().get();//некогда с этой хернёй разбираться
+//                oneResult.forEach((word, count) -> result.put(word, result.getOrDefault(word, 0) + count));
+//            } catch (ExecutionException | InterruptedException e) {
+//                System.out.println("ERROR: " + e.getMessage());
+//                return;
+//            }
+//        }
+//
+//        result.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue())).limit(10)
+//            .forEach(entry -> System.out.println(ANSI_GREEN + entry.getKey() + ": " + entry.getValue()));
+    }
+
     private static void ex1013() {
         List<Callable<Map<String, Integer>>> tasks = new ArrayList<>();
 
