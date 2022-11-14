@@ -30,6 +30,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +51,8 @@ public class App {
     private final static Scanner in = new Scanner(System.in);
     private final static Random random = new Random();
 
+    public static long count = 0;
+
     public static void main(String[] args) {
         System.out.print("Type exercise in the format like [chapterNumber].[exerciseNumber]: ");
         String exercise = in.nextLine();
@@ -59,6 +63,37 @@ public class App {
             (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex1017() throws InterruptedException {
+        List<Thread> threads = new ArrayList<>();
+        Lock countLock = new ReentrantLock();
+        Path directory = Path.of("/home/klimandr");
+        try (Stream<Path> entries = Files.walk(directory).parallel()) {
+            entries
+                .filter(Files::isRegularFile)
+                .forEach(path -> {
+                    threads.add(new Thread(() -> {
+                        countLock.lock();
+                        try {
+                            count += getFileWords(path.toString()).size();
+                        } finally {
+                            countLock.unlock();
+                        }
+                    }));
+                });
+        } catch (UncheckedIOException | IOException e) {
+            System.out.println(ANSI_RED + "ERROR: " + e.getMessage() + ANSI_RESET);
+        }
+
+        for (Thread thread: threads) {
+            thread.start();
+        }
+        for (Thread thread: threads) {
+            thread.join();
+        }
+
+        System.out.println("Количество слов: " + count);
     }
 
     private static void ex1015() {
