@@ -52,7 +52,7 @@ public class App {
     private final static Scanner in = new Scanner(System.in);
     private final static Console console = System.console();
     private final static Random random = new Random();
-    private static String password = "cerste";
+    private static final String password = "cerste";
 
     public static void main(String[] args) {
         System.out.print("Type exercise in the format like [chapterNumber].[exerciseNumber]: ");
@@ -63,6 +63,15 @@ public class App {
         } catch (Exception e) {
             (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
+        }
+    }
+
+    private static void ex111() {
+        NotCloneable notCloneable = new NotCloneable();
+        try {
+            NotCloneable cloned = notCloneable.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
         }
     }
 
