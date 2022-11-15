@@ -17,6 +17,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,7 +50,9 @@ public class App {
     private static final String ANSI_RESET = "\u001B[0m";
 
     private final static Scanner in = new Scanner(System.in);
+    private final static Console console = System.console();
     private final static Random random = new Random();
+    private static String password = "cerste";
 
     public static void main(String[] args) {
         System.out.print("Type exercise in the format like [chapterNumber].[exerciseNumber]: ");
@@ -59,6 +64,40 @@ public class App {
             (e.getCause() == null ? e : e.getCause()).printStackTrace();
 //            ex();
         }
+    }
+
+    private static void ex1026() {
+        CompletableFuture<PasswordAuthentication> future = repeat(App::getPathAuth, App::checkPathAuth);
+        future.join();
+    }
+
+    public static <T> CompletableFuture<T> repeat(Supplier<T> action, Predicate<T> until) {
+        return CompletableFuture.supplyAsync(action).thenApplyAsync(t -> {
+            try {
+                return until.test(t) ? t : repeat(action, until).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private static boolean checkPathAuth(PasswordAuthentication auth) {
+        try {
+            System.out.println(auth.getPassword());
+            TimeUnit.MILLISECONDS.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
+        return "secret".equals(String.valueOf(auth.getPassword()));
+    }
+
+    private static PasswordAuthentication getPathAuth() {
+        List<String> pwd = new ArrayList<>(java.util.Arrays.asList(password.split("")));
+        Collections.shuffle(pwd);
+        char[] pwdChars = new char[password.length()];
+        for (int i = 0; i < password.length(); i++) {
+            pwdChars[i] = pwd.get(i).charAt(0);
+        }
+        return new PasswordAuthentication("lala", pwdChars);
     }
 
     private static void ex1025() throws ExecutionException, InterruptedException {
