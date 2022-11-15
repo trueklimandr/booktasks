@@ -12,6 +12,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Set;
 
 @SupportedAnnotationTypes("booktasks.annotations.Todo")
@@ -37,7 +38,7 @@ public class TodoProcessor extends AbstractProcessor {
 
     private void writeTodo(PrintWriter out, TypeElement te) {
         String className = te.getQualifiedName().toString();
-        String todoText = te.getAnnotation(Todo.class).value();
+        String todoText = Arrays.stream(te.getAnnotationsByType(Todo.class)).map(Todo::value).reduce(String::concat).get();
         out.println(className);
         out.println(todoText);
     }
