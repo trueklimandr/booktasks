@@ -1,5 +1,7 @@
 package booktasks.classes;
 
+import booktasks.annotations.Cloneable;
+
 public class MyObject {
     @Override
     public Object clone() throws CloneNotSupportedException {

@@ -66,6 +66,10 @@ public class App {
         }
     }
 
+    private static void ex115() {
+
+    }
+
     private static void ex111() {
         NotCloneable notCloneable = new NotCloneable();
         try {
